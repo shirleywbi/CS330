@@ -1,5 +1,4 @@
 # CPSC 330 Summary Sheet
-Based on [UBC CPSC 330 Lectures](https://github.com/UBC-CS/cpsc330) by Mike Gelbert
 
 ## Supervised Learning
 
