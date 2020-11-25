@@ -49,3 +49,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y)
 
 # Taking a subset of a dataset (for speed)
 imdb_df = imdb_df.sample(frac=0.2, random_state=999)
+
+
+# Data Cleaning
+df_train_nan = census_train.replace('?', np.NaN)
+df_test_nan  = census_test.replace( '?', np.NaN)

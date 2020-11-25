@@ -197,6 +197,17 @@ _**Advantages:**_
 
 Transformers convert the data, often used for data cleaning, transforming text to numbers, etc. This needs to be done before preprocessing.
 
+_**How can I combine complex pipelines?**_
+To combine multiple types of transformers, use `ColumnTransformer`, which allows different operations on different sets of columns in parallel.
+
+![column-transformer](https://github.com/UBC-CS/cpsc330/raw/030b01fda146513d90cfc4bc15940ba6897ba345/lectures/img/column-transformer.png)
+[Source](https://amueller.github.io/COMS4995-s20/slides/aml-04-preprocessing/#37)
+
+- `ColumnTransformer` fits all the transformers and transforms all the transformers when they are called.
+- `ColumnTransformer` throws away any columns not accounted for in its steps, unless `remainder='passthrough'` is set.
+
+TODO: Add how to reference the hyperparameter names in ColumnTransformer
+
 ### CountVectorizer
 
 Transforms text data into counts or present/absent. May need to group values to avoid overfitting.
@@ -243,6 +254,42 @@ _**Things to consider:**_
 - You may want an "other" category
 - You may want only one column for binary variables
 - Avoid `drop='first'`
+
+### Handling missing data
+
+#### Dropping data
+
+One way to handle missing data is to drop the examples with missing data. However, we will not know how to handle missing values in deployment and the missing values may not be random.
+
+`X_train_nan.dropna(axis=1).shape`
+
+#### Imputation (SimpleImputer)
+
+Imputation invents values for the missing data.
+
+For categorical data, use `strategy='most_frequent'` or `strategy='constant', fill_value='?'`.
+For numerical data, use `strategy='mean'` or `strategy='median'`.
+
+### Scaling numerical values
+
+Two methods of scaling is standardization and normalization:
+
+|Approach|What it does|How to update $X$|sklearn implementation|
+|-|-|-|-|
+|normalization|sets range to $[0, 1]$|`X -= np.min(X,axis=0)` <br/>`X /= np.max(X,axis=0)`|`MinMaxScaler()`|
+|standardization|sets sample mean to 0, S.D. to 1|`X -= np.mean(X,axis=0)` <br/> `X /= np.std(X,axis=0)`|`StandardScaler()`|
+
+_**Why conduct feature scaling?**_
+
+- Improves performance for some models (e.g., LogisticRegression, not decision trees)
+- Is generally a good idea for numeric features
+  - May get very small coefficient values if values are very big (e.g., in LogisticRegression)
+
+#### Standardization (StandardScaler)
+
+#### Normalization (MinMaxScaler)
+
+#### TODO: RobustScaler
 
 ## Pipelines
 

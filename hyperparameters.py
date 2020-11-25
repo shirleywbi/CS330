@@ -40,6 +40,12 @@ param_choices = {
     "countvec__min_df" : scipy.stats.randint(low=0, high=300),
     "lr__C" : scipy.stats.randint(low=0, high=300) # TODO: this is lame, pick a continuous prob dist
 }
+### When using a pipeline, there are more layers
+#### pipe.get_params().keys() to get hyperparameter names
+hypers = {
+    'classifier__C' : [0.01, 0.1, 1, 10, 100],
+    'preprocessing__cat__impute__strategy' : ['most_frequent', 'constant']
+}
 
 random_search = RandomizedSearchCV(pipe, param_choices,
     n_iter = 12, 
