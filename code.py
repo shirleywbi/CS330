@@ -36,4 +36,12 @@ plt.legend(scatter.legend_elements()[0], ["No", "Yes"])
 scatter.legend_elements()[0]
 
 # Splitting the data (randomly)
+## Method: 1
 df_train, df_test = train_test_split(df)
+
+## Method: 2
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+
+# Taking a subset of a dataset (for speed)
+imdb_df = imdb_df.sample(frac=0.2, random_state=999)

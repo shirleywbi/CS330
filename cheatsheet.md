@@ -15,7 +15,52 @@ _**Workflow**_
 2. Use cross-validation on the training split for your model validation.
 3. Test your model once on the test set at the very end.
 
-### Classifiers
+## Golden Rule
+
+The test data should not influence the training process in any way. If the test data were to influence the training data, the model will be overly optimistic. The test data is used to act as a proxy for deployment error so it should only be used once.
+
+Still, it may not be a perfect representation due to:
+
+- Bad luck (worse for smaller datasets)
+- Deployment data coming from a different distribution
+- Test data is used more than once
+
+## Sources of Error
+
+Because the goal of supervised learning is to predict unseen/new data, we do not want the model to be too closely modeled to our training data. As a result, we split the data into **training** and **testing**.
+
+- Data should be split randomly
+
+_**Why won't you ever have $E_{best} = 0$?**_
+Because the target is not a fixed deterministic function of the features. There is always some randomness.
+
+### Fundamental Trade-off
+
+As you increase model complexity, $E_{train}$ tends to go down but $E_{test} - E_{train}$ tends to go up.
+
+### Overfitting
+
+Overfitting occurs when the model is too close to the model. Positively correlated with complexity.
+
+_**Occurs when:**_
+
+- $E_{train} < E_{best} < E_{test}$
+- Train score is much better than validation/test score
+
+### Underfitting
+
+Underfitting occurs when the model is so simple that it does not pick up the patterns from the training set.
+
+_**Occurs when:**_
+
+- $E_{best} < E_{train} ~< E_{test}$
+- Train score is poor, and is similar to validation/test score
+
+### TODO: Determining performance
+
+Compare against Dummy
+
+## Classifiers
 
 _**What does .score() do?**_
 It calls predict then compares the predictions to the true labels.
@@ -23,13 +68,13 @@ It calls predict then compares the predictions to the true labels.
 _**Why would score not result in 100% accuracy?**_
 There may be instances of duplicate features with different target values.
 
-#### DummyClassifier
+### DummyClassifier
 
 DummyClassifier makes predictions based on the target value, ignoring the features. Any reasonable classifier should have a higher prediction accuracy than `DummyClassifier`.
 
 - May not always get >= 50% prediction accuracy (e.g., when there are more than 2 target values)
 
-#### Decision Trees
+### Decision Trees
 
 Decision trees are classifiers that make predictions by sequentially looking at features and checking whether they are above/below a threshold. They learn axis-aligned decision boundaries (vertical and horizontal lines with 2 features).
 
@@ -39,38 +84,24 @@ Decision trees are classifiers that make predictions by sequentially looking at 
 _**Why not use a very deep tree?**_
 Although it will result in larger accuracy of the training data, it may result in overfitting and not apply to the test/deployment data.
 
-### Sources of Error
+### Logistic Regression (Linear Classifier)
 
-Because the goal of supervised learning is to predict unseen/new data, we do not want the model to be too closely modeled to our training data. As a result, we split the data into **training** and **testing**.
+Logistic Regression is a popular linear classifier that consists of input features, coefficients (weights) per feature, and bias or intercept.
 
-- Data should be split randomly
+_**Advantages:**_
 
-_**Why won't you ever have $E_{best} = 0$?**_
-Because the target is not a fixed deterministic function of the features. There is always some randomness.
+- Popular
+- Fast training and testing (e.g., huge datasets)
+- Interpretability
+  - Coefficients (weights) are how much a given feature changes the prediction and in what direction
 
-#### Fundamental Trade-off
+_**predict_proba**_
+Unlike `predict` that outputs the value with the highest confidence score, `predict_proba` outputs a list of confidence scores on a set of given features.
 
-As you increase model complexity, $E_{train}$ tends to go down but $E_{test} - E_{train}$ tends to go up.
+_**C**_
+C is correlated to the complexity of a model. Smaller C leads to less confident predictions (probabilities closer to 0.5).
 
-#### Overfitting
-
-Overfitting occurs when the model is too close to the model. Positively correlated with complexity.
-
-_**Occurs when:**_
-
-- $E_{train} < E_{best} < E_{test}$
-- Train score is much better than validation/test score
-
-#### Underfitting
-
-Underfitting occurs when the model is so simple that it does not pick up the patterns from the training set.
-
-_**Occurs when:**_
-
-- $E_{best} < E_{train} ~< E_{test}$
-- Train score is poor, and is similar to validation/test score
-
-### Hyperparameter Selection (Cross-validation)
+## Hyperparameter Selection (Cross-validation)
 
 To tune our hyperparameters, we need to add an additional split for validation so that our test data remains unseen (to simulate deployment data). In total, we have 4 datasets: train, validation, test and deployment.
 
@@ -81,7 +112,7 @@ To tune our hyperparameters, we need to add an additional split for validation s
 |Test       |   |once|once|
 |Deployment |   |    |✔️|
 
-#### $k$-fold cross-validation
+### $k$-fold cross-validation
 
 To obtain a better estimate of test error than just using a single validation set by using multiple splits on all the data. Each fold turns into a validation set and the values for each fold are averaged.
 
@@ -97,6 +128,14 @@ _**Disadvantage**_
 
 _**Finding the optimal model**_
 Pick the model with the lowest validation error (reasonable for now) and low approximation error (if possible)
+
+## Transformers
+
+Transformers convert the data, often used for data cleaning, transforming text to numbers, etc. This needs to be done before preprocessing.
+
+### CountVectorizer
+
+Transforms text data into counts or present/absent.
 
 ## Unsupervised Learning
 
