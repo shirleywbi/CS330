@@ -27,6 +27,10 @@ X.shape
 X.ndim
 y.value_counts()
 
+from pandas_profiling import ProfileReport
+profile = ProfileReport(census_train, title='Pandas Profiling Report')
+profile.to_notebook_iframe()
+
 ## Scatterplot
 scatter = plt.scatter(df["meat"], df["grade"], c=df["cilantro"]=="Yes", cmap=plt.cm.coolwarm);
 plt.xlabel("Meat consumption (% days)")

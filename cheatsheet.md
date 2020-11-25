@@ -40,12 +40,22 @@ As you increase model complexity, $E_{train}$ tends to go down but $E_{test} - E
 
 ### Overfitting
 
-Overfitting occurs when the model is too close to the model. Positively correlated with complexity.
+Overfitting occurs when the model is too close to the model. Positively correlated with complexity. With an infinite amount of training data, overfitting would not be a problem.
 
 _**Occurs when:**_
 
 - $E_{train} < E_{best} < E_{test}$
 - Train score is much better than validation/test score
+
+#### Overfitting the validation set
+
+- Small datasets make it harder to trust the best hyperparameters and accuracy due to noise
+
+_**What should I do if test score << cross-validation score?**_
+
+- Realistically report the values
+- Use the test set a couple of times
+- Try simpler models
 
 ### Underfitting
 
@@ -87,6 +97,8 @@ Although it will result in larger accuracy of the training data, it may result i
 ### Logistic Regression (Linear Classifier)
 
 Logistic Regression is a popular linear classifier that consists of input features, coefficients (weights) per feature, and bias or intercept.
+
+- Will fail if non-numeric data
 
 _**Advantages:**_
 
@@ -187,7 +199,50 @@ Transformers convert the data, often used for data cleaning, transforming text t
 
 ### CountVectorizer
 
-Transforms text data into counts or present/absent.
+Transforms text data into counts or present/absent. May need to group values to avoid overfitting.
+
+### Encoding categorical variables
+
+#### No encoding
+
+Dropping the data, but discards a lot of information
+
+#### OrdinalEncoder
+
+Transforms categorical variables by assigning an integer (ordered) to each unique categorical label.
+
+#### OneHotEncoder
+
+Transforms categorical variables into a different column for each value (0 = applies, 1 = does not apply)
+
+_**How do we deal with unknown values?**_
+
+- Add `handle_unknown='ignore'` to avoid errors which sets 0 for unknown values
+- If we know the categories, it might be reasonable to "violate the Golden Rule" by looking at the test set and hard-coding the categories
+
+_**Using drop='first'**_
+_Pros:_
+
+- In certain cases, like `LinearRegression`, this is important
+- Technically redundant to not do this
+
+_Cons:_
+
+- Prevents using `handle_unknown='ignore'` which is very often useful
+- Makes feature importances more confusing
+- Occasionally the choice of which feature gets dropped matters (e.g., feature selection after OHE)
+
+_**drop='if_binary'**_
+
+- Arbitrarily chooses one of the two categories based on the sorting and drops the first one.
+- Does not work with `handle_unknown='ignore'` so you may end up skipping it for convenience.
+
+_**Things to consider:**_
+
+- You may want to pre-set the categories
+- You may want an "other" category
+- You may want only one column for binary variables
+- Avoid `drop='first'`
 
 ## Pipelines
 
