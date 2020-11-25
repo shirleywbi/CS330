@@ -18,6 +18,6 @@ tree.fit(X, y)
 tree.score(X, y)
 
 # TODO
-plot_classifier(X_nodup, y_nodup, tree_nodup, ticks=True);
+plot_classifier(X_nodup, y_nodup, tree_nodup, ticks=True)
 plt.xlabel("Meat consumption (% days)")
 plt.ylabel("Expected grade (%)")

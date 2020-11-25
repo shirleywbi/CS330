@@ -156,6 +156,8 @@ _**Disadvantage:**_
 
 Two methods that can be used are exhaustive grid search and randomized search.
 
+- Allows for a custom scoring function (e.g., `scoring='roc_auc'`)
+
 _**Advantage:**_
 
 - Reduce human effort
@@ -285,10 +287,6 @@ _**Why conduct feature scaling?**_
 - Is generally a good idea for numeric features
   - May get very small coefficient values if values are very big (e.g., in LogisticRegression)
 
-#### Standardization (StandardScaler)
-
-#### Normalization (MinMaxScaler)
-
 #### TODO: RobustScaler
 
 ## Pipelines
@@ -305,6 +303,148 @@ _**Advantages:**_
 [Source](https://amueller.github.io/COMS4995-s20/slides/aml-04-preprocessing/images/pipeline.png)
 
 _________________________________
+
+## Analysis
+
+By default, `.score()` outputs accuracy but there are other ways to analyze the model such as:
+
+- Precision
+- Recall
+- F1 score
+
+_**Why should we look at scores other than accuracy?**_
+Accuracy does not tell the whole story! Consider imbalanced datasets which may have a very high accuracy (e.g., 99.9%). That information alone is not enough to tell us whether a model is good because it is so uncommon.
+
+- EX. Fraud, medical results, etc.
+
+_**Which metric do we care about?**_
+Although we would like high precision and recall, the balance depends on our domain. For instance, recall is really important if we really need good detection (e.g., credit card fraud detection).
+
+### Confusion Matrix
+
+Confusion matrices allow us to visualize predicted vs. actual class.
+
+- Perfect prediction has all values down the diagonal.
+- Off diagonal entries can often tell us about what is being mis-predicted.
+
+|X|predict negative|predict positive|
+|-|-|-|
+|negative example|True negative (TN)|False positive (FP)|
+|positive example|False negative (FN)|True positive (TP)|
+
+### Evaluation Metrics
+
+#### Accuracy
+
+$Accuracy = \frac{TN + TP}{TN + FN + TP + FP}$
+
+#### Precision
+
+"Of the positive examples you identified, how many were real?"
+
+$Precision = \frac{TP}{TP + FP}$
+
+#### Recall
+
+"How many of the actual positive examples did you identify?"
+
+$Recall = \frac{TP}{TP + FN}$
+
+#### F1 Score
+
+F1 score is a metric that "averages" precision and recall. If both precision and recall go up, the F1 score will go up, so in general we want this to be high. F1 score is for a given threshold and measures the quality of `predict`.
+
+- Can be used if we need a single score to maximize (e.g., `RandomizedSearchCV`)
+- Accuracy is often a bad choice
+
+![evaluation-metrics](https://github.com/UBC-CS/cpsc330/raw/030b01fda146513d90cfc4bc15940ba6897ba345/lectures/img/evaluation-metrics.png)
+Source: Varada Kolhatkar
+
+#### Precision-Recall Curves
+
+A precision-recall curve computes and plots a grid of possible thresholds
+
+![precision-recall curve](https://scikit-learn.org/stable/_images/sphx_glr_plot_precision_recall_001.png)
+
+- _**Top-right:**_ Perfect classifier, where precision = recall = 1
+- _**Red star:**_ Threshold = 0.5
+- **Average precision (AP)** is the area under the curve and is a score that summarizes the "goodness" of the plot. It is a summary _**across**_ thresholds and measures the quality of `predict_proba`.
+- Bumpy because changing the threshold affects some discrete number of examples
+
+#### ROC Curves
+
+ROC plots true positive (recall) against false positive rate
+
+![roc-curve](https://scikit-learn.org/stable/_images/sphx_glr_plot_roc_001.png)
+
+- _**Diagonal line**_: If random guesses
+- _**Top-left**_: Best
+- _**Threshold = 1**_: Always predict "negative" (bottom-left)
+- _**Threshold = 0**_: Always predict "positive" (upper-right)
+- Curve is monotonic
+
+##### Area under the curve (AUC)
+
+AUC provides a single meaningful number for systems performance
+
+- AUC = 1.0 means perfect classification
+- AUC = 0.5 means random chance
+
+_**Why is ROC AUC not highly influenced by class_weight?**_
+Changing the `class_weight` is like changing the thresholds. Since ROC AUC is a summary of the thresholds, it doesn't change much.
+
+![auc](https://camo.githubusercontent.com/f56a65760302c86e4f0d446136db43c58ca37936/68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f646172697961737964796b6f76612f6f70656e5f70726f6a656374732f6d61737465722f524f435f616e696d6174696f6e2f616e696d6174696f6e732f6375746f66662e676966)
+
+Consider the following:
+
+- Let:
+  - X-axis = predict proba
+  - blue = fraud
+  - orange = not fraud
+- If the threshold is at a position where everything on its right is blue, there is 100% precision with that positive class. However, there is lower recall. As we move the threshold left, there is a tradeoff between precision and recall. Precision decreases and recall increases.
+
+![auc-2](https://camo.githubusercontent.com/992d8f60f2697455518553d570dbdd7b7c0bdd27/68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f646172697961737964796b6f76612f6f70656e5f70726f6a656374732f6d61737465722f524f435f616e696d6174696f6e2f616e696d6174696f6e732f524f432e676966)
+
+Consider the following cases:
+
+1. **No overlap**
+    - ROC curve is a right angle
+    - Always right because there are no cases where you would mispredict.
+
+2. **Some overlap**
+    - ROC curve is between diagonal and right angle
+    - As recall increases, so does false positive
+
+3. **Full overlap**
+    - ROC curve shows a rough diagonal line.
+    - It is a useless classifier. Try a different one
+
+### Class Imbalance
+
+Training sets are imbalanced when there are more examples in one class than another (e.g., 1:10 ratio)
+
+_**Why do I have imbalance? Should I address the problem?**_
+
+- Is it because one class is more rare than the other?
+  - If so, you need to determine whether you care about one type of error more than the other
+  - If so, it is reasonable to use `class_weight` to address this
+- Is it because of my data collection methods?
+  - If so, it suggests deployment and training data come from different distributions
+  - Reasonable to use `class_weight` to fix this
+- If not to both, it may be fine to ignore the class imbalance.
+
+_**How can I fix the imbalance?**_
+
+- Thresholding
+- Modify the class weight (e.g., `class_weight='balanced'` or `class_weight={1:10}`)
+  - Generally reduces accuracy
+  - Output of `predict_proba` loses some of its meaning if this was changed because you care about one type of error more than the other
+  - Shifts all probabilities toward one direction but won't necessarily separate the classes for a given threshold
+- _**Stratified splits**_ (`StratifiedKFolds`) allows for cross-validation on folds that preserve the percentage of samples for each class.
+  - No longer a random sample (not a big issue)
+  - Shouldn't matter as much if many examples
+  - Useful in multi-class
+
 ## Unsupervised Learning
 
 TODO

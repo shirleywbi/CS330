@@ -38,7 +38,7 @@ param_choices = {
 }
 param_choices = {
     "countvec__min_df" : scipy.stats.randint(low=0, high=300),
-    "lr__C" : scipy.stats.randint(low=0, high=300) # TODO: this is lame, pick a continuous prob dist
+    "lr__C" : scipy.stats.randint(low=0, high=300)
 }
 ### When using a pipeline, there are more layers
 #### pipe.get_params().keys() to get hyperparameter names

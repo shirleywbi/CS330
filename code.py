@@ -18,8 +18,12 @@ df.head()
 
 df.columns = ['meat', 'grade', 'cilantro']
 
-X = df[['lon', 'lat']] # TODO: Use the drop example
-y = df['vote']
+target_value = 'SalePrice'
+X_train = df_train.drop(columns=[target_value])
+y_train = df_train[target_value]
+
+X_test = df_test.drop(columns=[target_value])
+y_test = df_test[target_value]
 
 # Exploratory
 df.describe()
