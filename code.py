@@ -35,5 +35,5 @@ plt.legend(scatter.legend_elements()[0], ["No", "Yes"])
 
 scatter.legend_elements()[0]
 
-# Splitting the data
+# Splitting the data (randomly)
 df_train, df_test = train_test_split(df)
