@@ -129,6 +129,58 @@ _**Disadvantage**_
 _**Finding the optimal model**_
 Pick the model with the lowest validation error (reasonable for now) and low approximation error (if possible)
 
+### Manual hyperparameter optimization
+
+_**Advantage:**_
+
+- We may have some intuition about what might work (e.g., if massively overfit, we know to try decreasing `max_depth` or `C`).
+
+_**Disadvantage:**_
+
+- It takes a lot of work.
+- In very complicated cases, our intuition might be worse than a data-driven approach.
+
+### Automatic hyperparameter optimization
+
+Two methods that can be used are exhaustive grid search and randomized search.
+
+_**Advantage:**_
+
+- Reduce human effort
+- Less prone to error and improve reproducibility
+- Data-driven approaches may be effective
+
+_**Disadvantage:**_
+
+- May be hard to incorporate intuition
+- Be careful about overfitting on the validation set
+
+#### Exhaustive grid search (GridSearchCV)
+
+A user specifies a set of values for each hyperparameter. The method considers the "product" of the sets and then evaluates each combination one by one.
+
+_**How many models?**_
+$n_Models = |C| * |folds|$
+
+_**Disadvantages:**_
+
+- Required number of models to evaluate grows exponentially with the dimensionality of the configuration space
+- May become infeasible fairly quickly
+
+#### Randomized hyperparameter optimization (RandomizedSearchCV)
+
+Optimization samples configurations at random until certain budget (e.g., time) is exhausted.
+
+_**How many models?**_
+$n_Models = n_iter * |folds|$
+
+_**Advantages:**_
+
+- You can choose how many runs you'll do.
+- You can restrict yourself less on what values you might try.
+- Adding parameters that do not influence the performance does not affect efficiency.
+- Research shows this is generally a better idea since you don't know in advance which hyperparameters are important for your problem. GridSearchCV is more likely to result in repeatedly choosing unimportant parameters.
+
 ## Transformers
 
 Transformers convert the data, often used for data cleaning, transforming text to numbers, etc. This needs to be done before preprocessing.
@@ -137,6 +189,20 @@ Transformers convert the data, often used for data cleaning, transforming text t
 
 Transforms text data into counts or present/absent.
 
+## Pipelines
+
+Sequentially apply a list of transforms and a final estimator, refitting again on each fold.
+
+_**Advantages:**_
+
+- Cleanly call `fit` on train split and `score` on test split
+- Can't accidentally re-fit the preprocessor on the test data
+- Automatically makes sure the same transformations are applied to train and test
+
+![pipeline](https://amueller.github.io/COMS4995-s20/slides/aml-04-preprocessing/images/pipeline.png)
+[Source](https://amueller.github.io/COMS4995-s20/slides/aml-04-preprocessing/images/pipeline.png)
+
+_________________________________
 ## Unsupervised Learning
 
 TODO

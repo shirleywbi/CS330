@@ -13,7 +13,7 @@ X_test_imdb_raw = imdb_test['review']
 y_test_imdb = imdb_test['label']
 
 vec = CountVectorizer(min_df=50, binary=True) # present/absent
-X_train_imdb = vec.fit(X_train_imdb_raw)
+X_train_imdb = vec.fit_transform(X_train_imdb_raw)
 
 # WARNING: Do NOT fit the transformer with the test data
 # vec.fit(X_test_imdb_raw);
