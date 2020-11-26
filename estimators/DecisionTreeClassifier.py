@@ -17,7 +17,7 @@ tree = DecisionTreeClassifier(max_depth=1)
 tree.fit(X, y)
 tree.score(X, y)
 
-# TODO
-plot_classifier(X_nodup, y_nodup, tree_nodup, ticks=True)
+# Plot
+plot_classifier(X_nodup, y_nodup, tree, ticks=True)
 plt.xlabel("Meat consumption (% days)")
 plt.ylabel("Expected grade (%)")

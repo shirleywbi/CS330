@@ -94,6 +94,24 @@ Decision trees are classifiers that make predictions by sequentially looking at 
 _**Why not use a very deep tree?**_
 Although it will result in larger accuracy of the training data, it may result in overfitting and not apply to the test/deployment data.
 
+_**Why don't we need to scale?**_
+Because decision trees work with thresholds rather than absolute values, we don't need to scale.
+
+#### Random Forests
+
+Random forests are a collection of decision trees. For instance, `RandomForestClassifier` is an average of a bunch of random decision trees.
+
+- Each tree "votes" on the prediction, majority rules
+- Each tree (and split) is limited in the number of features it can look at
+- Each tree is training on a slightly different version of the dataset
+
+_**Available Hyperparameters**_
+These classifiers implement `predict_proba` so we can use something like ROC AUC. The probability scores come from the variation in the votes across trees, and other fancier sources. But, not all of them implement `class_weight`.
+
+##### Gradient Boosting Tree Classifier
+
+Gradient boosting tree-based classifiers are complicated random forests. Some examples are `XGBClassifier`, `LGBMClassifier`, `CatBoostClassifier`.
+
 ### Logistic Regression (Linear Classifier)
 
 Logistic Regression is a popular linear classifier that consists of input features, coefficients (weights) per feature, and bias or intercept.
@@ -112,6 +130,53 @@ Unlike `predict` that outputs the value with the highest confidence score, `pred
 
 _**C**_
 C is correlated to the complexity of a model. Smaller C leads to less confident predictions (probabilities closer to 0.5).
+
+### Ensembles
+
+Ensembles create multiple models and combine their results. Ensembles are effective but tradeoff code complexity and code speed for prediction accuracy. With hyperparameter optimization, there is added slowness. Two methods of ensembling are stacking and averaging.
+
+#### Averaging
+
+`VotingClassifer` will take a vote using the predictions of the constituent classifier pipelines.
+
+- `voting='hard'` uses the output of predict and actually votes
+- `voting='soft'` averages `predict_proba` and thresholds / takes the larger.
+- The choice depends on whether you trust `predict_proba` from your base classifiers.
+
+|Example|log reg|rand for|cat boost|Averaged model|
+|-|-|-|-|-|
+|1|✅|✅|❌|✅✅❌=>✅|
+|2|✅|❌|✅|✅❌✅=>✅|
+|3|❌|✅|✅|❌✅✅=>✅|
+
+_**Advantages:**_
+
+- Potentially getting a better classifier by averaging multiple together
+
+_**Disadvantages:**_
+
+- `fit`/`predict` time
+- Reduction in interpretability
+- Reduction in code maintainability
+
+_**Why can averaging the models improve the prediction?**_
+The different models make different mistakes.
+
+#### Stacking
+
+Use the output of a model (features) as the inputs to another model. By default, this uses `LogisticRegression`, resulting in a weighted average of otuputs and learning from the weights. An effective strategy is randomly generating a bunch of models with different hyperparameter configurations, and then stacking all the models.
+
+- The number of coefficients = the number of base estimators
+- By default, it does cross-validation, fitting the base estimators on the training fold, predicting on the validation fold, and then fitting the meta-estimator on the output (on the validation fold)
+
+_**Advantages:**_
+
+- More accuracy compared to voting
+- Can see the coefficients for each base classifier
+
+_**Disadvantages:**_
+
+- Slower than voting
 
 ## Hyperparameter Selection (Cross-validation)
 
@@ -319,6 +384,19 @@ Accuracy does not tell the whole story! Consider imbalanced datasets which may h
 
 _**Which metric do we care about?**_
 Although we would like high precision and recall, the balance depends on our domain. For instance, recall is really important if we really need good detection (e.g., credit card fraud detection).
+
+_**How can we interpret the scores?**_
+
+- High std for test score -> We can't exactly trust the ordering
+- Higher train scores compared to test scores -> Overfitting
+  - Adjust hyperparameters
+
+_**What should we consider when analyzing and making our conclusions?**_
+
+- Size of the dataset
+- CV folds
+- Test set
+- Choice in scoring metric
 
 ### Confusion Matrix
 
