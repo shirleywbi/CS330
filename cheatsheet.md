@@ -178,6 +178,40 @@ _**Disadvantages:**_
 
 - Slower than voting
 
+## Regression
+
+Similar to classifiers, there are corresponding estimators in regression:
+
+- DummyClassifier -> DummyRegressor
+- LogisticRegression -> Ridge
+- RandomForestClassifier -> RandomForestRegressor
+- VotingClassifier -> VotingRegressor
+- XGBClassifier -> XGBRegressor
+- etc.
+
+### DummyRegressor
+
+`DummyRegressor` is a regressor that makes predictions using simple rules. This regressor is useful as a simple baseline to compare with other regressors.
+
+### Linear Regression (Ridge)
+
+Linear regression is a linear approach to modeling the relationship between a scalar response and one or more explanatory variables. We will use `Ridge()` because there is more flexibility with hyperparameter `alpha`.
+
+- Using Ridge also allows us to use `handle_unknown='ignore'` in OHE.
+- `alpha` is the inverse of `C`
+  - Smaller `alpha`: lower training error
+  - Larger `alpha`: lower approximation error
+- Generally larger `alpha` leads to smaller coefficients
+  - Smaller coefficients mean the predictions are less sensitive to changes in the data, meaning less overfitting
+- Avoid `alpha=0` because `Ridge(alpha=0)` is equivalent to `LinearRegression`
+- Coefficient size will not change in the same proportion
+- Hyperparameters can be tuned with `RidgeCV`
+
+_**Advantages:**_
+
+- Basic or popular
+- Interpretable
+
 ## Hyperparameter Selection (Cross-validation)
 
 To tune our hyperparameters, we need to add an additional split for validation so that our test data remains unseen (to simulate deployment data). In total, we have 4 datasets: train, validation, test and deployment.
@@ -522,6 +556,48 @@ _**How can I fix the imbalance?**_
   - No longer a random sample (not a big issue)
   - Shouldn't matter as much if many examples
   - Useful in multi-class
+
+### Regression Metrics (Error metrics)
+
+Unlike classification, we cannot just check for equality. To determine whether an error metric is reasonable, consider the error relative to the actual value.
+
+_**What happens when we log transform the targets?**_
+
+- _**MAPE:**_ Log transforming the targets turns addition/subtraction into multiplication/division, which is what we want (fractional error instead of absolute error). In short, it improves MAPE (lower MAPE).
+- _**R*2/MSE:**_ It gets worse.
+  - Typical because the default settings try to optimize this metric
+- Assumes target values are positive
+  - If there is a value that equals 0, you can $log(1+y)$ using `log1p` and `expm1`.
+
+One convenient way to log-transform the data is using `TransformedTargetRegressor`, which also allows us to use functions like `cross_validate` when transforming the targets.
+
+#### Mean Squared Error (MSE)
+
+- Perfect predictions have MSE=0
+- The goodness of the score depends on the scale of the targets
+  - EX. If we work on cents instead of dollars, our MSE would be $100^{2}$ higher.
+- Reversible so `mean_squared_error(y_train, preds)` is the same as `mean_squared_error(preds, y_train)`
+- By default, if you call `fit`, it minimizes MSE.
+
+#### Root Mean Squared Error (RMSE)
+
+- Since regression has units, it's useful to look at RMSE over MSE because unit is more interpretable than unit^2
+- Perfect predictions have RMSE=0
+
+#### Coefficient of determination (R^2)
+
+- Flipped MSE and normalized so the max is 1
+- Perfect predictions have R^2=1
+- Negative values are worse than `DummyRegressor`
+- Not reversible so `r2_score(y_test, dummy.predict(X_test))` is not the same as `r2_score(dummy.predict(X_test), y_test)`
+- By default, if you call `fit`, it maximizes R^2.
+
+#### Mean Absolute Percent Error (MAPE)
+
+Calculates the percent prediction error
+
+- Lower is better
+- You can ignore negative signs
 
 ## Unsupervised Learning
 
