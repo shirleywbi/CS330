@@ -99,7 +99,7 @@ Because decision trees work with thresholds rather than absolute values, we don'
 
 #### Random Forests
 
-Random forests are a collection of decision trees. For instance, `RandomForestClassifier` is an average of a bunch of random decision trees.
+Random forests are a collection of decision trees. For instance, `RandomForestClassifier` is an average of a bunch of random decision trees. They are ensembles built using bootstrapping.
 
 - Each tree "votes" on the prediction, majority rules
 - Each tree (and split) is limited in the number of features it can look at
@@ -211,6 +211,19 @@ _**Advantages:**_
 
 - Basic or popular
 - Interpretable
+
+### Ensembles (Regression)
+
+Similar to classifiers, there is ensembling in regression:
+
+- VotingClassifier -> VotingRegressor
+- StackingClassifier -> StackingRegressor
+
+_**How does ensembling differ in regression?**_
+
+- **Averaging**: Calculates the average between multiple estimators
+- **Stacking**: Meta-model is `Ridge`
+  - Instead of using `predict_proba` to get numerical inputs, since the data is already numeric, we can just use the output of `predict`.
 
 ## Hyperparameter Selection (Cross-validation)
 
@@ -598,6 +611,59 @@ Calculates the percent prediction error
 
 - Lower is better
 - You can ignore negative signs
+
+### Prediction interval (Regression)
+
+Prediction intervals are useful for communicating uncertainty. Unlike classifiction, we do not have `predict_proba` in regression. Instead we use prediction intervals as a measure of confidence. Some variants of intervals are:
+
+- Confidence intervals for parameter estimates
+- Confidence intervals for prediction
+- Prediction intervals (for predictions, also take into account uncertainty in data)
+
+_**Creating prediction intervals**_
+
+- **Bootstrapping:** A statistically reasonable way to generate a prediction interval that trains your model on different variants of the dataset (sampled with replacement).
+- **Min-Max:** Based on an ensemble, getting the min and max values and using that as the interval. Not great since there is no statistical underpinning.
+- **Standard deviation:** Based on an ensemble, getting the standard deviation of the predictions and using that as the interval.
+- **Quantile regression:** Regression using a different type of error metric. Instead of trying to minimize an error like MSE, we want the true value to be below the predicted value X% of the time. 
+  - You can use this to get prediction intervals by training two models at two different quantiles (10% and 90%) using `GradientBoostingRegressor` or `LGBMRegressor`.
+
+### [Feature Importances](https://github.com/UBC-CS/cpsc330/blob/master/lectures/11_feature-importances.ipynb)
+
+Feature importances tell you about how features correlate with predicted prices. Therefore, we cannot make causal statements.
+
+_**Why do we want feature importances?**_
+
+- To identify features that are not useful and maybe remove them
+- Get guidance on what new data to collect
+  - New features related to useful features -> better results
+  - Don't bother collecting useless features -> save resources
+- Help explain why the model is making certain predictions
+  - Debugging, if the model is behaving strangely
+  - Regulatory requirements
+  - Fairness/bias
+  - Keep in mind this can be used on deployment predictions
+- And more...
+
+#### Linear Models
+
+$Prediction = intercept + \sum_{i} coefficient i x feature i$
+TODO: Reference homework, potentially rewatch L11; interpretability?
+
+_**What would cause the prediction to be different than expected?**_
+After scaling, the coefficients likely are per unit, but per $X$ units. The prediction Scaling influences the coefficient score. For instance, StandardScaler subtracted the mean and divided by the standard deviation.
+
+_**What happens if we log transform our space?**_
+If we increase the feature by 1 scaled unit, then we increase the log predicted price by the exp(coefficient).
+
+#### Non-Linear Models
+
+TODO: Add concept notes
+
+Two ways of getting feature importances from non-linear models is with sklearn `feature_importances_` and SHAP. As these values are unsigned, they tell us about the importance but not direction. Unlike linear models, increasing a feature for non-linear models may cause the prediction to first go up, then go down.
+
+- If comparing two different models, do not compare actual values but rather order of feature importance.
+- `feature_importances_` pertain only to training data while SHAP can apply to all data.
 
 ## Unsupervised Learning
 
