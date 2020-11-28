@@ -8,10 +8,16 @@ lr_coefs.head(30)
 lr[1].intercept_
 lr_coefs.loc[["PoolArea", "LotFrontage"]] # To get specific column
 
-# Correlations (with Heatmap)
+# Feature Correlations (with Heatmap)
 import seaborn as sns
 
+## Example 1
 sns.heatmap(X_train_enc[numeric_features[:5]].corr())
+
+## Example 2
+plt.figure(figsize=(15,15))
+sns.set(font_scale=1)
+sns.heatmap(cor, annot=True, cmap=plt.cm.Blues);
 
 # Checking predictions
 one_example = X_test[:1]

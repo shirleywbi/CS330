@@ -665,6 +665,57 @@ Two ways of getting feature importances from non-linear models is with sklearn `
 - If comparing two different models, do not compare actual values but rather order of feature importance.
 - `feature_importances_` pertain only to training data while SHAP can apply to all data.
 
+#### Feature Correlation
+
+Feature correlations can be determined using a heatmap. However, it is overly simplified because you can only look at each feature in isolation.
+
+_**So why use it?**_
+If two features are highly correlated, we can consider whether we need both values.
+But note that if we add/remove a feature, a different feature may become important.
+
+### Feature Selection
+
+Feature selection looks at which features are important for predicting $y$, and removing the features that aren't.
+
+_**Why not use all features?**_
+
+- Data collection: It might be cheaper to collect fewer columns
+- Computation: Models fit/predict faster with fewer columns
+- Fundamental tradeoff: We might be able to reduce overfitting by removing useless features
+
+_**How to do feature selection?**_
+
+- Domain knowledge
+- Importance-based feature elimination
+
+_**Warnings about feature selection**_
+
+- A feature's relevance is only defined in the context of other features
+  - Adding/removing features can make features relevant/irrelevant
+- If features can be predicted from other features, you cannot know which one to pick
+- Relevance for features does not have a causal relationship
+- Don't be overconfident
+  - The methods we have seen probably do not discover the ground truth and how the world really works
+  - They simply tell you which features help in predicting $y_i$ for the data you have
+
+#### Importance-based feature elimination
+
+The basic idea for importance-based feature elimination is to throw away the least important feature
+
+##### Recursive feature elimination (RFE)
+
+1. Decide $k$, the number of features to select.
+2. Assign importances to features (by fitting a model and looking at `coef_` or `feature_importances_`)
+3. Remove the least important feature
+4. Repeat steps 2-3 until only $k$ features are remaining.
+
+_**Why don't we just remove all the less important features at once?**_
+By removing a feature, the importances may change so a feature that was once not very important may become more important.
+
+_**How can we determine how many features to select?**_
+
+We can use cross validation with RFECV. However, this violates the Golden Rule.
+
 ## Unsupervised Learning
 
 TODO
@@ -672,3 +723,5 @@ TODO
 ## Resources
 
 - [MDS Terminology](https://ubc-mds.github.io/resources_pages/terminology/)
+
+TODO: Add L12 MT review from notes
