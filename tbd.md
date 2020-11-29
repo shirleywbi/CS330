@@ -1,6 +1,59 @@
 # TODO: Name this file
 
-## Distances and Neighbours (L14)
+TODO: This is unsupervised learning
+
+## Nearest Neighbours
+
+`NearestNeighbours` is an example of unsupervised learning, where we try to find the nearest neighbour(s) to a given vector.
+
+- It is advisable to scale your values.
+
+Distance can be defined as euclidean distance, cosine similarity, etc.
+
+### Distance
+
+#### Euclidean distance
+
+The euclidean distance is length of the line segment between two points (Pythagorean distance), as such, it cares about the magnitude of the vectors. This can be applied to vectors in which we get the difference, square and squareroot to get the distance between the vectors (array of numbers, an example).
+
+#### Cosine Similarity
+
+Cosine similarity is the cosine of the angle between two vectors. Unlike euclidean distance, this depends on where the location of the origin "(0,0)" because we draw a line from the origin to the points of interest to compare. It only cares about angle. If we preprocess our features, the origin would be like an "average" case sort of.
+
+- 0 degrees -> cosine of 1 -> most similar
+- 180 degrees -> cosine of 0 -> least similar
+
+Because this is a similarity rather than distance, everything is backwards.
+
+- Cosine similarity is between -1 and 1 (similarity < 0 if angle > 90 degrees)
+- Cosine distance is between 0 and 2
+
+**Note**: To be consistent with distances, `NearestNeighbours` uses $1 - cosine_similarity$ so smaller values mean more similar.
+
+### Sparse Matrices
+
+Sparse matrices are matrices that only store nonzero elements. Although there is a bit of overhead to store the locations, if the fraction of nonzero is small, it's a win.
+
+- `CountVectorizer` and `OneHotEncoder` output a sparse matrix.
+- For a huge number of categories, it may be beneficial to keep them as sparse.
+- For a small number of categories, it doesn't matter much.
+
+_**Why don't we create a matrix to find similar items?**_
+If we create a matrix of items x users s.t. we use the nearest neighbours to find similar items and the users become the features, the matrix is too big and most of the values will be 0 from missing data.
+
+- **Solution**: Sparse matrices
+
+_**How can I get number of nonzeros?**_
+`X_train.nnz`
+
+#### Distances with sparse data
+
+Depending on distance metric, we can get different nearest neighbours.
+
+_**Product Recommendation**_
+For the case of product recommendation, it may be better to use cosine similarity because it might be better to recommend more popular items in general. In terms of euclidean distance, because there are a lot of zeros in the dataset, there are arrows in multiple directions. A big more-popular arrow will probably have a larger euclidean distance compared to a small less-popular arrow. In contrast, looking angles doesn't do that.
+
+- Not an issue if scaled but cannot scale because it is a sparse matrix.
 
 ## Text Data (L15)
 
