@@ -78,6 +78,26 @@ It calls predict then compares the predictions to the true labels.
 _**Why would score not result in 100% accuracy?**_
 There may be instances of duplicate features with different target values.
 
+### Multi-class classification
+
+Multi-class classification refers to classification with >2 classes.
+
+_**How does multi-class classification differ from binary classification?**_
+
+- Same for feature importance
+- `predict_proba` outputs one value per class
+- Outputs one coefficient per feature per class in `LogisticRegression`
+  - Sums to 0 for each feature
+  - By convention
+  - Only occurs with `multi_class='multinomial'`
+
+If you want general feature importance irrespective of class, you can look at the sum of the squares of the coefficients.
+
+`(lr_coefs**2).sum(axis=1).sort_values(ascending=False)`
+
+_**How do precision, recall, etc. work?**_
+Precision, recall, etc. do not apply directly, but if we pick one of the classes as positive and the rest negative, then we can.
+
 ### DummyClassifier
 
 DummyClassifier makes predictions based on the target value, ignoring the features. Any reasonable classifier should have a higher prediction accuracy than `DummyClassifier`.

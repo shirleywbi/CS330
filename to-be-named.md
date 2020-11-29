@@ -1,10 +1,70 @@
 # TODO: To-Be-Named
 
-## TODO: Computer vision
+## Computer Vision
+
+Computer vision refers to understanding images/videos, usually using ML/AI. There are many tasks of interest:
+  
+- Image classification: Cat vs. Dog?
+- Object localization: Where are the people in this image?
+- Image segmentation: What are the various parts of this image?
+- Motion Detection: What moved between frames of a video?
+- Etc.
 
 ### Feature importances for computer vision
 
 - LIME can be used to shade the image based on importance
+
+### Neural Networks (Neural Net)
+
+A neural network is a model similar to a pipeline. It involves a series of transformations ("layers") internally and the output is the prediction. Deep learning is using neural networks.
+
+_**Advantages:**_
+
+- Can learn very complex functions
+  - The fundamental tradeoff is primarily controlled by the number of layers and layer sizes.
+  - More layers / bigger layers -> more complex model.
+  - You can generally get a model that will not underfit.
+- Works really well for structured data
+  - 1D sequence, e.g. timeseries, language
+  - 2D image
+  - 3D image or video
+- Incredible successes in the last 10 years
+- Transfer learning is really useful
+
+_**Disadvantages:**_
+
+- Often requires a lot of data
+- Require a lot of compute time, and, to be faster, specialized hardware called GPUs
+- Huge numbers of hyperparameters are a huge pain to tune; also slow
+- Not interpretable
+- Calling `fit` does not guarantee optimality
+  - There are now a bunch of hyperparameters specific to fit, rather than the model.
+  - You never really know if fit was successful or not.
+  - You never really know if you should have run fit for longer.
+- Not recommended training neural nets without further training
+
+#### Neural Networks for Images
+
+Two ways of processing images is:
+
+- Flattening images (Naive)
+  - Throws away a lot of useful information; computer only sees an array of numbers
+- Convolutional neural networks: Can take in images without flattening them
+
+#### Using Pre-Trained Networks
+
+`tf.keras` has a bunch of pre-trained computer vision models. Using a dataset, we can get predictions without "doing ML ourselves". This can be useful for sentiment analysis.
+
+_**Advantages:**_
+
+- Saves time/cost/effort/resources
+- Can use pre-trained networks directly or use them as feature transformers
+
+#### Transfer Learning
+
+Transfer learning is using a model trained on one task as a starting point for learning to perform another task. This is useful because it is difficult to obtain labelled data.
+
+- Requires setting things up the same way they were set up when the model was trained (e.g., image size)
 
 ## [Ethics](https://github.com/UBC-CS/cpsc330/blob/master/lectures/22_ethics.ipynb)
 
