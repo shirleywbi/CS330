@@ -69,7 +69,85 @@ Transfer learning is using a model trained on one task as a starting point for l
 
 ## Communication
 
-### TODO L20-21
+_**Why should I care about effective communication?**_
+
+- Most ML practitioners work in an organization with >1 people.
+- There will very likely be stakeholders other than yourself who need to understand what you're doing:
+  - their state of mind may change the way you do things (see below)
+  - your state of mind may change the way they do things (interpreting your results)
+- ML suffers from some particular communication issues
+  - overstating one's results / unable to articulate the limitations
+  - unable to explain the predictions
+  - difficult to explain topics:
+    - Why did CatBoost make that prediction?
+    - Can we trust test error?
+    - What does it mean if predict_proba outputs 0.9?
+    - Etc.
+
+### Principles of Good Explanations
+
+#### Concepts then labels, not the other way around
+
+The effectiveness of of starting with a concept then label vs the other way around varies on your audience.
+
+- For people new to the topic, it is better to build knowledge then add label.
+- For people who are familiar to the topic, it is better to label then build knowledge.
+
+#### Bottom-up explanations
+
+The curse of knowledge is a cognitive bias that as you learn more about a topic, it leads to top-down explanations which makes it harder to explain.
+To counter this, start from an example/analogy. When you're brand new to a concept, you benefit from analogies, concrete examples and familiar patterns.
+
+#### New ideas in small chunks
+
+It can be beneficial to break down an explanation into small chunks
+
+- Analogy > Example > Problem > Solution > How it works (High level) > How it works (Written Example) > How it works (Code) > Label
+
+#### Approach from all angles
+
+When we're trying to draw mental boundaries around a concept, it's helpful to see examples on all sides of those boundaries. If we were writing a longer explanation, it might be better to show more such as:
+
+- Performance with and without hyperparameter tuning
+- Other types of hyperparameter tuning (e.g. RandomizedSearchCV)
+
+#### Reuse your running examples
+
+Effective explanations often use the same example throughout the text and code. This helps readers follow the line of reasoning.
+
+#### When experimenting, show the results asap
+
+The first explanation shows the output of the code, whereas the second does not. This is easy to do and makes a big difference.
+
+#### Interesting to you != useful to the reader
+
+Communication is not only about you.
+
+### ML and Decision-Making
+
+There is often a wide gap between what people care about and what ML can do. To understand what ML can do, let's think about what decisions will be made using ML.
+
+_**What is involved in decisions?**_
+
+- **Decision variable**: The variable that is manipulated through the decision (action that will be taken).
+  - EX. How much should I sell my house for? (numeric)
+  - EX. Should I sell my house? (categorical)
+- **Decision-maker's objectives**: The variables that the decision-maker ultimately cares about, and wishes to manipulate indirectly though the decision variable.
+  - EX. Total profit, time to sale, etc.
+- **Context**: The varaibles that mediate the relationship between the decision variable and the objectives.
+  - EX. Housing market, cost of marketing, my timeline, etc.
+
+_**How does this inform you as a ML practitioner?**_
+
+Questions you have to answer:
+
+- Who is the decision maker?
+- What are their objectives?
+- What are their alternatives?
+- What is their context?
+- What data do I need?
+
+### TODO L21
 
 ## [Ethics](https://github.com/UBC-CS/cpsc330/blob/master/lectures/22_ethics.ipynb)
 
