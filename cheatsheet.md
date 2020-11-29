@@ -740,6 +740,29 @@ We can use cross validation with RFECV. However, this violates the Golden Rule.
 
 TODO
 
+## Big Datasets
+
+_**Problems with big datasets:**_
+
+- The code is too slow
+- The dataset doesn't fit in memory - Can't even load it with `pd.read_csv`
+
+_**Solutions:**_
+
+- Subset your data for experimentation/hyperparameter tuning, then train your final model on the whole dataset (once)
+- "SGD" (stochastic gradient descent): `SGDClassifier` and `SGDRegressor`
+  - Quickly finding "approximately" the best coefficients when calling `fit`
+  - SGDRegressor is basically equivalent to Ridge.
+  - SGDRegressor(loss='huber') is basically equivalent to HuberRegressor.
+  - SGDClassifier(loss='log') is basically equivalent to LogisticRegression, except the parameter is called alpha instead of C (like Ridge).
+  - With other settings they are equivalent to other models, but this is good enough.
+
+_**Why is "SGD" faster?**_
+It does a worse job of `fit` (time tradeoff).
+
+_**When should you use "SGD"?**_
+On big datasets. If you want to wait a short amount of time, you can use `SGDClassifier`. If you want to wait a long time, just use `LogisticRegression`.
+
 ## Resources
 
 - [MDS Terminology](https://ubc-mds.github.io/resources_pages/terminology/)
