@@ -564,6 +564,30 @@ Consider the following cases:
     - ROC curve shows a rough diagonal line.
     - It is a useless classifier. Try a different one
 
+#### Communicating Confidence: Credence and `predict_proba`
+
+**Credence** means truthfulness or believability. Avoid overestimating your confidence in a score. We don't just want to be right. We want to be confident when we're right and hesitant when we're wrong.
+
+In practical terms, it means that:
+
+- I would accept a bet at these odds
+  - For a chance of winning $1, I would bet $99 that I'm right about this.
+- Long-run frequency correctness
+  - 75% sure means that for every 100 predictions I make at this level of confidence, I would expect about 25% to be incorrect.
+
+This is along the lines of `predict` vs. `predict_proba`.
+
+_**What does it mean to be 0%, 50%, 100% sure?**_
+
+- 0% -> 100% sure it's not the case
+- 50% -> Unsure
+- 100% -> 100% sure it is the case
+
+##### Loss Functions
+
+Loss functions are used to quantify confidence in `predict_proba`.
+When calling `fit` for `LogisticRegression` it has the same preferences: correct and confident > correct and hesitant > incorrect and hesitant > incorrect and confident
+
 ### Class Imbalance
 
 Training sets are imbalanced when there are more examples in one class than another (e.g., 1:10 ratio)

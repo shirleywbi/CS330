@@ -147,7 +147,20 @@ Questions you have to answer:
 - What is their context?
 - What data do I need?
 
-### TODO L21
+### Visualizing Your Results
+
+When visualizing your results, avoid the following:
+
+- Misleading axes
+  - e.g., multiple axes, different sized axes, range of axes
+- Manipulating bin sizes
+  - e.g., different sized bins
+- Dataviz ducks
+  - e.g., tried to be clever about design but hard to read
+- Glass slippers
+  - e.g., applying a nice design that doesn't fit the data
+- The principle of proportional ink
+  - e.g., if the number is bigger, there should be more ink on the page
 
 ## [Ethics](https://github.com/UBC-CS/cpsc330/blob/master/lectures/22_ethics.ipynb)
 

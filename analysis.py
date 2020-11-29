@@ -51,3 +51,10 @@ pipe_lr_balanced = Pipeline([
     ('lr', LogisticRegression(max_iter=1000, class_weight='balanced'))
 ])
 pipe_lr_balanced.fit(X_train_fold, y_train_fold)
+
+
+# Confidence Scores
+from sklearn.metrics import log_loss
+
+## What is the negative score if correct and 95% confident?
+log_loss(y_true=np.array([0]), y_pred=np.array([[0.95, 0.05]]), labels=(0,1))
