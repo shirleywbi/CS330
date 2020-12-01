@@ -1,7 +1,5 @@
 # TODO: Name this file
 
-TODO: This is unsupervised learning
-
 ## Nearest Neighbours
 
 Finding nearest neighbours can be used for both supervised and unsupervised learning.
@@ -282,7 +280,68 @@ Because random forests split into different paths down the tree, the outlier wou
 
 - Random forests are safer than regression.
 
-## Time series data (L17)
+## Time series data
+
+### Splitting Temporal Data
+
+#### Train/test splits
+
+Unlike with other data where we can use `train_test_split`, we cannot use it with temporal data because it means that we are training on data that came before our test data. If we want to forecast, we aren't allowed to know what happened in the future. Instead, we can split the data at a given time point.
+
+#### Cross-validation
+
+Cross-validation randomly shuffles the rows, so you might get rows in your training set that occur after rows in your validation set. This isn't 100% terrible in that you're still predicting next week's values but it's not a good idea, especially if there are trends.
+
+- Our training split is a bit weird because we "have the answers" in the training set.
+
+#### Other splitting methods
+
+Some other splitting methods are `TimeSeriesSplit` and `ShuffleSplit`. 
+
+_**`TimeSeriesSplit`**_
+
+- Expects dataframe to be sorted by date
+- OK to have multiple measurements for a given timestamp
+
+### Encoding date/time as feature(s)
+
+_**Encoding methods**_
+
+- Encoding time as a number
+- OHE of the month
+- OHE of the seasons
+- Periodic encoding (sin/cos over a year)
+
+### Lag-based features
+
+A lag feature is a variable which contains data from prior time steps. We can also create a lagged version of the target.
+
+- Only works with equally spaced data, otherwise does not make sense
+
+_**Is it fine to add a lag feature?**_
+Yes, if you would have this information available in deployment.
+
+_**Is there a difference between adding a lag feature then splitting vs. splitting then adding a lag feature?**_
+Yes, a tiny difference. The first day of the test set, for each location, will have `NaN`
+
+- That might actually be too strict
+- It should be fine to do this before splitting
+
+### Forecasting further into the future
+
+_**Approaches:**_
+
+1. Train a separate model for each number of days (Recommended).
+2. Use a multi-output model that jointly predicts tomorrow, in 2 days, etc.
+3. Use one model and sequentially predict using a for loop. However, this requires predicting all features into a model so may not be that useful here.
+
+### Trends
+
+With `LinearRegression`, we can learn a coefficient for `Days_since`. If the coefficient is positive, it predicts unlimited growth forever.
+
+With a random forest, we'll be doing splits form the training set (e.g., "if `Days_since` > 9100 then do this"). There will be no splits for later time points because there is no training data there. Therefore, tree-based models CANNOT model trends.
+
+Often, we model the trend separately and use the random forest to model a de-trended time series.
 
 ## Survival Analysis (L18)
 
