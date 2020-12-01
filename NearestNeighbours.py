@@ -27,7 +27,7 @@ nn.fit(cities_X)
 n_distances, n_inds = nn.kneighbors(cities_X.iloc[[0]]) # Note the double brackets
 
 
-## KNN Example
+## KNN Example for non-supervised
 grill_brush = "B00CFM0P7Y"
 grill_brush_ind = item_mapper[grill_brush]
 grill_brush_vec = X_user_item[grill_brush_ind]
@@ -47,3 +47,34 @@ nearby_items = np.squeeze(nearby_items)[1:] # Drops itself since its in the data
 ### Reviewers in common
 for item in nearby_items:
     print(np.sum(np.squeeze(X_item_user[grill_brush_ind].toarray()) * np.squeeze(X_item_user[item].toarray()) >0))
+
+
+# KNN in Supervised Learning
+## KNN Classifier
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+
+knn = KNeighborsClassifier(n_neighbors=100)
+knn.fit(X_train, y_train)
+knn.score(X_train, y_train)
+knn.score(X_test, y_test)
+
+plot_classifier(X_train, y_train, knn, ax=plt.gca(), ticks=True);
+plt.ylabel("latitude")
+plt.xlabel("longitude")
+
+
+## KNN Regression
+n = 30 # number of samples
+np.random.seed(0) # fix seed for reproducibility
+X = np.linspace(-1,1,n)+np.random.randn(n)*0.01
+X = X[:, None]
+y = np.random.randn(n,1) + X*5
+
+knn = KNeighborsRegressor(n_neighbors=1, weights='uniform').fit(X, y)
+knn.score(X, y)
+
+plt.plot(X, y, '.r', markersize=15)
+grid = np.linspace(np.min(X), np.max(X), 1000)[:,None]
+plt.plot(grid, knn.predict(grid))
+plt.xlabel('feature')
+plt.ylabel('target')

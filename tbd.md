@@ -4,11 +4,7 @@ TODO: This is unsupervised learning
 
 ## Nearest Neighbours
 
-`NearestNeighbours` is an example of unsupervised learning, where we try to find the nearest neighbour(s) to a given vector.
-
-- It is advisable to scale your values.
-
-Distance can be defined as euclidean distance, cosine similarity, etc.
+Finding nearest neighbours can be used for both supervised and unsupervised learning.
 
 ### Distance
 
@@ -30,6 +26,15 @@ Because this is a similarity rather than distance, everything is backwards.
 
 **Note**: To be consistent with distances, `NearestNeighbours` uses $1 - cosine_similarity$ so smaller values mean more similar.
 
+#### Distances with sparse data
+
+Depending on distance metric, we can get different nearest neighbours.
+
+_**Product Recommendation**_
+For the case of product recommendation, it may be better to use cosine similarity because it might be better to recommend more popular items in general. In terms of euclidean distance, because there are a lot of zeros in the dataset, there are arrows in multiple directions. A big more-popular arrow will probably have a larger euclidean distance compared to a small less-popular arrow. In contrast, looking angles doesn't do that.
+
+- Not an issue if scaled but cannot scale because it is a sparse matrix.
+
 ### Sparse Matrices
 
 Sparse matrices are matrices that only store nonzero elements. Although there is a bit of overhead to store the locations, if the fraction of nonzero is small, it's a win.
@@ -46,16 +51,159 @@ If we create a matrix of items x users s.t. we use the nearest neighbours to fin
 _**How can I get number of nonzeros?**_
 `X_train.nnz`
 
-#### Distances with sparse data
+### `NearestNeighbours` in Unsupervised Learning
 
-Depending on distance metric, we can get different nearest neighbours.
+In unsupervised learning, `NearestNeighbors` It is where we try to find the nearest neighbour(s) to a given vector.
 
-_**Product Recommendation**_
-For the case of product recommendation, it may be better to use cosine similarity because it might be better to recommend more popular items in general. In terms of euclidean distance, because there are a lot of zeros in the dataset, there are arrows in multiple directions. A big more-popular arrow will probably have a larger euclidean distance compared to a small less-popular arrow. In contrast, looking angles doesn't do that.
+- It is advisable to scale your values.
 
-- Not an issue if scaled but cannot scale because it is a sparse matrix.
+Distance can be defined as euclidean distance, cosine similarity, etc.
 
-## Text Data (L15)
+### KNN for Supervised Learning
+
+KNN for supervised learning works by finding the $k$ closest neighbours to a given "query point". This fundamentally relies on a choice of distance. There is KNN for both classifiers `KNeighborsClassifier` and regression `KNeighborsRegressor`.
+
+For regular KNN for supervised learning (not with sparse matrices), you should scale your features.
+
+_**What is k?**_
+
+$k$ is a hyperparameter. A smaller $k$ has lower training error, higher approximation error because it only takes 1 example to change your prediction.
+
+_**Advantages:**_
+
+- Easy to understand, interpret
+- Simple hyperparameter ($k$) controlling the fundamental tradeoff
+- Can learn very complex functions given enough data
+
+_**Disadvantages:**_
+
+- Can be potentially be VERY slow
+- Often not that great test accuracy
+
+#### KNN Regression
+
+In KNN regression, we take the average of the $k$ nearest neighbours.
+
+- Regression plots more natural in 1D, classification in 2D, but we can do either for any $d$
+
+## NLP
+
+Natural Language Processing (NLP) involves extracting information from human language.
+
+Examples:
+
+- Translation
+- Summarization
+- Sentiment analysis
+- Relationship extraction
+- Question answering / chatbots
+
+_**Why is NLP difficult?**_
+
+- Lexical ambiguity
+  - e.g., Who is Panini? Person vs. Sandwich
+- Part-of-speech ambiguity
+  - e.g., Fruit flies like a banana.
+    - Flies = preposition vs. noun?
+    - Like = preposition or verb?
+- Referential ambiguity
+  - e.g., If the baby does not thrive on raw milk, boil **it**
+
+### Word Counts, TF-IDF
+
+Similar to `CountVectorizer`, but you normalize word count by the frequency of the word in the entire dataset.
+
+- EX. If "earthshattering" appears 10 times, that is more meaningful than if "movie" appears 10 times because it is less common.
+- Has the same shape as `CountVectorizer` but the counts are normalized
+- `TfidfTransformer` can take the word counts from `CountVectorizer` and transform them to the same output as `TfidfVectorizer`.
+
+### Word embeddings
+
+Word embeddings is "embedding" a word in a vector space. You have a bunch of feature columns and each word has a representation.
+
+- Can result in sparse and dense embeddings
+
+_**Sparse vs. Dense word vectors**_
+
+- Term-term and term-document matrices are sparse
+- OK because there are efficient ways to deal with sparse matrices
+
+_**Alternatives**_
+
+- Learn short (~100 to 1000 dimensions) and dense vectors.
+- These short dense representations of words are referred to as word embeddings.
+- Short vectors may be easier to train with ML models (less weights to train).
+- They may generalize better.
+
+_**How can we get dense vectors?**_
+
+- Count-based methods
+  - Singular Value Decomposition (SVD) - beyond the scope of the course
+- Prediction-based methods
+  - Word2Vec - able to capture complex relationships between words
+    - EX. What is the word that is similar to WOMAN in the same sense as KING is similar to MAN?
+    - Perform a simple algebraic operations with the vector representation of words: $\vec{X} = \vec{KING} - \vec{MAN} + \vec{WOMAN}$
+    - Search in the vector space for the word closest to $\vec{X}$ measured by cosine distance.
+  - fastText
+  - GloVe
+
+_**Implicit biases and stereotypes in word embeddings**_
+Word embeddings reflects gender stereotypes present in broader society. They may also amplify these stereotypes because of their widespread usage.
+
+#### Vector space model
+
+In vector space models, we model the meaning of a word by placing it in a vector space. Distances among words in the vector space indicate the relationship between them.
+
+!['vector-space-model'](https://github.com/UBC-CS/cpsc330/raw/8c4bcfe4785d680b5201449a8ce24b7298a6ed08/lectures/img/t-SNE_word_embeddings.png)
+
+(Attribution: Jurafsky and Martin 3rd edition)
+
+#### Distributional hypothesis
+
+The distributional hypothesis suggests "You shall know a word by the company it keeps. If A and B have almost identical environments we say that they are synonyms."
+
+EX.
+
+- Her child loves to play in the playground.
+- Her kid loves to play in the playground.
+
+#### Co-occurrence matrices
+
+A way to represent vectors into a vector space.
+
+#### Term-document matrix
+
+A term-document matrix is the transpose of `CountVectorizer` For each word, what are the documents it appears in. Similar words are the words that appear in similar documents.
+
+- Each cell is a count of words in the document in that column.
+- You can describe a document in terms of the frequencies of different words in it.
+- You can describe a word in terms of its frequency in different documents.
+
+#### Term-term matrix
+
+The idea of a term-term matrix is to go through a corpus of text, keeping a count of all of the words that appear in its context within a window.
+
+#### Pre-trained embeddings
+
+Pre-trained skip the step of training complicated ML models on big data sets by having someone else do the `fit` for us already. We can just download and `transform`.
+
+Examples:
+
+- word2vec
+  - trained on several corpora using the word2vec algorithm, published by Google
+- GloVe
+  - trained using the GloVe algorithm, published by Stanford
+- fastText pre-trained embeddings for 294 languages
+  - trained using the fastText algorithm, published by Facebook
+
+## Feature Engineering
+
+Feature engineering is the general task of coming up with good features given available input data.
+
+- In the past, this was often done "manually" for things like images, text, etc. But now a lot of this has moved to deep learning, and often pre-trained models.
+- You can engineer whatever features you want, e.g. # bathrooms per bedroom
+- For a super complex model, this helps with overfitting (prior knowledge)
+- For a super simple model, this helps with underfitting (also prior knowledge)
 
 ## Outliers
 

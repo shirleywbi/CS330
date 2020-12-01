@@ -1,5 +1,4 @@
 from sklearn.tree import DecisionTreeClassifier
-from constants import X, y
 
 import re
 import graphviz

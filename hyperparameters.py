@@ -1,5 +1,3 @@
-from constants import X_train, y_train
-
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score, cross_validate
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV

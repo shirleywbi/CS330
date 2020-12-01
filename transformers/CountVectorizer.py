@@ -28,3 +28,13 @@ dt.score(X_test_imdb, y_test_imdb)
 
 # Getting feature names
 vec.get_feature_names()
+
+
+
+# CountVectorizer examples
+CountVectorizer(min_df=5).fit_transform(df_train["review"]).shape
+CountVectorizer(min_df=5, max_df=100).fit_transform(df_train["review"]).shape
+CountVectorizer(min_df=5, max_df=100, max_features=1000).fit_transform(df_train["review"]).shape
+CountVectorizer(vocabulary=["good", "bad", "silly", "horrible"]).fit_transform(df_train["review"]).shape
+CountVectorizer(ngram_range=(1,2), min_df=5, max_df=100, 
+                      max_features=1000, stop_words="english")
