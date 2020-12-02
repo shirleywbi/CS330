@@ -84,6 +84,163 @@ In KNN regression, we take the average of the $k$ nearest neighbours.
 
 - Regression plots more natural in 1D, classification in 2D, but we can do either for any $d$
 
+## Clustering
+
+Two ways we can group data is to group the observations such that:
+
+1. Examples in the same group are as similar as possible.
+2. Examples in the different groups are as different as possible.
+
+_**What is the difference between classification and clustering?**_
+Classification is supervised while clustering is unsupervised (i.e., the labels are unknown). There is no "true" or "correct" cluster, only an optimal cluster. Generally, not even the number of clusters is known.
+
+### $k$-means clustering
+
+1. Assign each example to the closest center.
+2. Estimate new centers as average of example in a cluster.
+Repeat 1. and 2. until centers and assignments do not change anymore.
+
+- The "classic" k-means is random and can give bad results. Stick to the defaults.
+
+_**`fit`**_
+
+1. Assigns each point to a cluster.
+2. Creates a "cluster center" for that point.
+
+_**`predict`**_
+
+- Outputs an array of labels (arbitrary order)
+
+_**k-means vs. KNN**_
+
+- `KMeans` is a clustering algorithm (unsupervised learning) where input is your dataframe, output is assigning each point to a cluster.
+- `NearestNeighbors` takes in a point and finds the $k$ closest points.
+- `KNeighborsClassifier` and `KNeighborsRegressor` are for supervised learning. They use the nearest neighbours to predict a label.
+
+_**Could there be a deployment phase for clustering?**_
+Yes. For example, "what sauce would a new person buy?".
+
+### Choosing $k$
+
+$k$ is the number of clusters. Since in unsupervised learning we do not have the $y$ values, it becomes very difficult to objectively measure the effectiveness of the algorithms. There is no definitive approach (highly subjective).
+
+_**How do we determine how well the clusters "fit" the data?**_
+Inertia: Minimal sum of intra-cluster distances
+
+_**Why can't we just look for a $k$ that minimizes the sum of intra-cluster distance (inertia)?**_
+Because it decreases as $k$ increases. But, we can evaluate the trade-off: "small k" vs. "small intra-cluster distances".
+
+#### Elbow Method
+
+Find the elbow (visual).
+![elbow](https://media.geeksforgeeks.org/wp-content/uploads/20190606105550/distortion1.png)
+Ref: Geeks for Geeks
+
+#### Silhouette Method
+
+The silhouette method compares the average distance to the neighbour cluster to the average distance to the given cluster to come up with a silhouette coefficient for that example (sklearn.metrics.silhouette_samples).
+
+- Does not depend on a center
+
+_**Steps:**_
+Find the second best cluster for each point.
+
+1. Average the distances of the green point to the other points in the same cluster.
+    - These distances are represented by the black lines;
+2. Average the distances of the green point to the points in the blue cluster.
+    - These distances are represented by the blue lines;
+3. Average the distances of the green point to the points in the red cluster.
+    - These distances are represented by the red lines
+
+Then, since the average distance to the blue cluster is lower than to the red cluster, the blue cluster is considered to be the neighbour cluster - (the second-best choice for the green point to live, after the black cluster).
+
+_**Silhouette Coefficient:**_
+The silhouette coefficients are technically between $-1$ and $+1$ but typically between $0$ and $+1$ (sort of like $R^2$).
+
+- $0$ means close to another cluster, $+1$ means far from other clusters (good)
+- This can also be used to compare between different clustering algorithms.
+
+_**Silhouette Coefficient vs. Inertia**_
+
+- Unlike inertia, the silhouette method can be used with any clustering algorithm.
+- Unlike the inertia, larger values are better because they indicate that the point is further away from neighbouring clusters.
+- Unlike the inertia, the overall silhouette score gets worse as you add more clusters because you end up being closer to neighbouring clusters.
+- Thus, as with intertia, you will not see a "peak" value of this metric that indicates the best number of clusters.
+
+##### [Visualizing the silhouette score](https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html)
+
+Horizontal bar chart where each line is one point, sorted from highest to lowest.
+
+- Shows drop-off
+  - More rectangular, far to the right is good clustering
+
+### Distance metrics
+
+Distance metrics are used to measure the dissimilarity between points. This is a fundamental step in clustering algorithms because it defines what is similar. But, selection is tricky and there is no methodological recipe for it. It requires domain knowledge.
+
+- `scipy.spatial.distance.cdist` is helpful for calculating distance.
+- Be careful when using Euclidean distance on non-scaled data.
+
+_**Do we need to transform our data to numeric?**_
+For euclidean distance, yes but not necessarily if our distance function can take in the right data type.
+
+_**Clustering with distances only**_
+
+- Some require the $x$ vectors
+  - E.g. $k$-means, for averaging the points to find cluster centres
+- Some only require the ability to compute distances between any two points
+  - E.g. DBSCAN to verify
+- Some only require the distance matrix
+  - E.g., `SpectralClustering` with affinity='precomputed'.
+
+### DBSCAN
+
+DBSCAN is a clustering algorithm that does not require you to pick $k$ in advance. It can fit shapes that $k$-means cannot (e.g., inner/outer ring).
+
+- Defines cluster by densitiy. Each point must have at least some number of neighbours in a given radius.
+- There is no `predict`. DBSCAN only clusters the points you have, not "new" or "test" points.
+- Unlike $k$-means, DBSCAN doesn't have to assign all points to clusters.
+  - The label is -1 if a point is unassigned.
+- Can only handle one density
+
+_**Needs to:**_
+
+- Define how many neighbour points we require
+- The neighborhood size parameter
+- The neighborhood shape: This will be defined by the distance metric used.
+
+### Hierarchical clustering
+
+_**How do I handle subclusters of a larger cluster?**_
+In a step-by-step way, merge or divide the existing clusters.
+
+_**How to measure clusters' dissimilarity?**_
+
+- Minimum distance (single linkage)
+- Maximum distance (complete linkage)
+- Average distance (average linkage)
+
+#### Agglomerative clustering
+
+Agglomerative clustering works by merging clusters.
+
+_**Steps**_
+
+1. Start with each point as a separate cluster.
+2. Merge the clusters that are most similar to each other.
+3. Repeat Step 2 until you obtain only one cluster ($n-1$ times).
+
+##### Understanding the output of `linkage`
+
+The function linkage will return a matrix (n-1)x4:
+
+- First and second columns: indexes of the clusters being merged.
+- Third column: the distance between the clusters being merged.
+- Fourth column: the number of elements in the newly formed cluster.
+The rows represent the iterations.
+
+There are several ways to truncate the tree in the dendrogram (especially when you have a big $n$).
+
 ## NLP
 
 Natural Language Processing (NLP) involves extracting information from human language.
@@ -345,4 +502,20 @@ Often, we model the trend separately and use the random forest to model a de-tre
 
 ## Survival Analysis (L18)
 
-## Clustering (L19)
+TODO
+
+### Censoring
+
+
+
+### Kaplan-Meier Curve
+
+
+
+### Cox Proportional Hazards Model
+
+
+
+### Prediction
+
+

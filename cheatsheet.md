@@ -762,7 +762,7 @@ We can use cross validation with RFECV. However, this violates the Golden Rule.
 
 ## Unsupervised Learning
 
-TODO
+Unsupervised learning looks for patterns in a data set without labels (e.g., Nearest Neighbours).
 
 ## Big Datasets
 
