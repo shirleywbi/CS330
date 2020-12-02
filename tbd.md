@@ -500,22 +500,68 @@ With a random forest, we'll be doing splits form the training set (e.g., "if `Da
 
 Often, we model the trend separately and use the random forest to model a de-trended time series.
 
-## Survival Analysis (L18)
+## [Survival Analysis](https://github.com/UBC-CS/cpsc330/blob/master/lectures/18_survival-analysis.ipynb)
 
-TODO
+Survival analysis is when we want to analyze the time until an event occurs.
+
+Examples:
+
+- The time until a disease kills its host
+- The time until a piece of equipment breaks.
+- The time that someone unemployed will take to land a new job.
+- The time until a customer leaves a subscription service.
 
 ### Censoring
 
+Censoring is an occurrence that prevents you from observing the exact time that the event happened for all units/indidividuals that are being studied. This means that we don't have correct target values to train/test our model.
 
+_**Types:**_
+
+- Right censoring
+  - Did everyone join at the same time?
+  - Are there other reasons the data might be censored at random times (e.g., death)?
+- Left censoring
+- Interval censoring
+
+_**Why can't we use regular regression models?**_
+For a customer who has churned, they have left so the tenure is correct. However, for customers who have not churned, they have stayed for AT LEAST the tenure. This leads to an underestimate.
+
+#### Approach 1: Consider only the cases for which we have the time
+
+_**Issue:**_
+On average they will be underestimates (too small), because we are ignoring the currently subscribed (un-churned) customers. Our dataset is a biased sample of those who churned within the time window of the data collection. Long-time subscribers were more likely to be removed from the dataset! This is a common mistake.
+
+#### Approach 2: Assume everyone churns right now (i.e., use original dataset)
+
+_**Issue:**_
+It will be an underestimate again. For those still subscribed, while we did not remove them, we recorded a total tenure shorter than in reality, because they will keep going for some amount of time. because we have a bunch of churns "now" that did not actually happen.
+
+#### Approach 3: Survival analysis
+
+`lifelines` is a package for survival analysis that takes into consideration people who have left and people who have stayed at least this long. It can answer:
+
+- How long do customers stay with the service?
+- What factors influence a customer's churn time?
+- For a particular customer, can we predict how long they might stay with the service?
 
 ### Kaplan-Meier Curve
 
+Kaplan-Meier Curve shows the probability of survival over time (i.e., after certain months, what is the probabilty they're still around).
 
+- Looks only at tenure and churn
+- Individual K-M curves can be applied to different subgroups
+  - Does not look at features
 
 ### Cox Proportional Hazards Model
 
+The Cox proportional hazards model is a commonly used model that allows us to **interpret how features influence a censored tenure/duration**.
 
+- Like linear regression for survival analysis: we will get a coefficient for each feature that tells us how it influences survival
+- It makes some strong assumptions (the proportional hazards assumption) that may not be true
+- The proportional hazard model works multiplicatively, like linear regression with log-transformed targets
 
 ### Prediction
 
+Prediction focuses on indiviudal customers.
 
+With regular supervised learning, tenure was a feature and we could only predict whether or not they had churned by then.
