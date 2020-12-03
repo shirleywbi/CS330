@@ -66,10 +66,6 @@ _**Occurs when:**_
 - $E_{best} < E_{train} ~< E_{test}$
 - Train score is poor, and is similar to validation/test score
 
-### TODO: Determining performance
-
-Compare against Dummy
-
 ## Classifiers
 
 _**What does .score() do?**_
@@ -792,3 +788,39 @@ On big datasets. If you want to wait a short amount of time, you can use `SGDCla
 - [MDS Terminology](https://ubc-mds.github.io/resources_pages/terminology/)
 
 TODO: Add L12 MT review from notes
+
+## Model Deployment
+
+After we train a model, we want to use it! The user likely does not want to install your Python stack, train your model. You don't necessarily want to share your dataset.
+
+So we need to do two things:
+
+- Save/store your model for later use.
+- Make the saved model conveniently accessible
+
+Upon deployment, we'll re-fit the model on the full dataset to get it ready for deployment.
+
+- This is probably a good idea, because more data is better.
+- It's also a little scary, because we can't test this new model.
+
+_**How to deploy prediction model**_
+
+1. Develop a RESTful web API that accepts HTTP requests in the form of input data and returns a prediction.
+2. Build a web application with a HTML user-interface that interacts directly with our API.
+
+_**Things to consider:**_
+
+- Privacy/security
+- Scaling
+- Error handling
+- Real-time / speed
+- Low-resource environments (e.g. edge computing)
+- etc.
+
+## Guidelines
+
+- Do train-test split right away and only once
+- Don't look at the test set until the end
+- Don't call `fit` on test/validation data
+- Use pipelines
+- Use baselines (e.g., Dummy)
