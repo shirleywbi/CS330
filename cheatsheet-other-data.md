@@ -360,8 +360,6 @@ Feature engineering is the general task of coming up with good features given av
 - For a super complex model, this helps with overfitting (prior knowledge)
 - For a super simple model, this helps with underfitting (also prior knowledge)
 
-
-
 ## Time series data
 
 ### Splitting Temporal Data
