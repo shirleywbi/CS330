@@ -1,4 +1,4 @@
-# TODO: To-Be-Named
+# # CPSC 330 Summary Sheet: Other Topics
 
 ## Computer Vision
 
