@@ -220,6 +220,9 @@ _**How to measure clusters' dissimilarity?**_
 - Maximum distance (complete linkage)
 - Average distance (average linkage)
 
+_**Why can't we handle linkage the same as k-means?**_
+There's ambiguity in defining distance between two clusters vs. distance between points.
+
 #### Agglomerative clustering
 
 Agglomerative clustering works by merging clusters.

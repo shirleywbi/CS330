@@ -691,6 +691,15 @@ $Prediction = intercept + \sum_{i} coefficient i x feature i$
 _**What would cause the prediction to be different than expected?**_
 After scaling, the coefficients likely are per unit, but per $X$ units. The prediction Scaling influences the coefficient score. For instance, StandardScaler subtracted the mean and divided by the standard deviation.
 
+_**My coefficient is scaled. How do you unscale it?**_
+Given the scaled coefficient for a feature, it means if you increase/decrease by one scaled unit, the target will change by the coefficient value. To make get it to the correct scale, divide it by the square root of the variance. This will allow for direct unit-target inferences.
+
+``` {}
+scaler = preprocessor_text.named_transformers_['scale']
+scales = pd.DataFrame(data=np.sqrt(scaler.var_), index=numeric_features, columns=["Scale"])
+price_coef/scales.loc["price","Scale"]
+```
+
 _**What happens if we log transform our space?**_
 If we increase the feature by 1 scaled unit, then we increase the log predicted price by the exp(coefficient).
 
@@ -749,8 +758,10 @@ _**Why don't we just remove all the less important features at once?**_
 By removing a feature, the importances may change so a feature that was once not very important may become more important.
 
 _**How can we determine how many features to select?**_
-
 We can use cross validation with RFECV. However, this violates the Golden Rule.
+
+_**How is RFE different from eliminating by less popular features?**_
+Feature importance != popularity so they may be removing different features.
 
 ## Unsupervised Learning
 
